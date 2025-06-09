@@ -1,16 +1,19 @@
 package config
 
 import (
+	"flag"
 	"log"
 	"os"
+	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
 type Config struct {
-	Env          string `yaml:"env"`
-	Storage_path string `yaml:"storage_path"`
-	GRPC         `yaml:"grpc"`
+	Env         string        `yaml:"env"`
+	StoragePath string        `yaml:"storage_path"`
+	TokenTTL    time.Duration `yaml:"token_ttl"`
+	GRPC        `yaml:"grpc"`
 }
 
 type GRPC struct {
@@ -18,19 +21,29 @@ type GRPC struct {
 	Timeout int `yaml:"timeout"`
 }
 
-func LoadFlag() {
+func fetchConfigFlag() string {
+	var res string
+
+	// --config="path/to/config.yaml"
+	flag.StringVar(&res, "config", "", "Path to config file")
+	flag.Parse()
+
+	if res == "" {
+		res = os.Getenv("CONFIG_PATH")
+	}
+	return res
 
 }
 
 func MustLoad() *Config {
 	// os.Setenv("CONFIG_PATH", "./config/local.yaml")
 
-	conf_path := os.Getenv("CONFIG_PATH")
+	conf_path := fetchConfigFlag()
 	if conf_path == "" {
-		log.Fatal("CONFIG_PATH is not set")
+		log.Fatal("CONFIG_PATH is empty")
 	}
 
-	if _, err := os.Stat("CONFIG_PATH"); os.IsNotExist(err) {
+	if _, err := os.Stat(conf_path); os.IsNotExist(err) {
 		log.Fatalf("Config file %s does not exist", conf_path)
 	}
 
