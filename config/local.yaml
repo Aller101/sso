@@ -1,0 +1,7 @@
+env: "local"
+storage_path: "./storage/sso.db"
+grps:
+  port: 44040
+  timeout: 5s
+  
+
