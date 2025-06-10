@@ -17,8 +17,8 @@ type Config struct {
 }
 
 type GRPC struct {
-	Port    int `yaml:"port"`
-	Timeout int `yaml:"timeout"`
+	Port    int           `yaml:"port"`
+	Timeout time.Duration `yaml:"timeout"`
 }
 
 func fetchConfigFlag() string {
