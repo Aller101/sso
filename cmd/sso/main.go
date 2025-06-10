@@ -16,11 +16,9 @@ const (
 func main() {
 
 	cfg := config.MustLoad()
-
-	// fmt.Println(cfg)
 	log := setupLogger(cfg.Env)
 
-	log.Info("start sso")
+	log.Info("start sso", slog.Any("cfg", cfg))
 
 }
 
