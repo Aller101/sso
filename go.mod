@@ -5,6 +5,7 @@ go 1.23.4
 require (
 	github.com/Aller101/protos v0.0.1
 	github.com/ilyakaznacheev/cleanenv v1.5.0
+	golang.org/x/crypto v0.39.0
 	google.golang.org/grpc v1.73.0
 )
 

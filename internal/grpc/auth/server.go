@@ -9,14 +9,24 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// все входящ запросы
-type serverAPI struct {
-	ssov1.UnimplementedAuthServer
+type Auth interface {
+	Login(ctx context.Context, email string, password string, appID int) (token string, err error)
+	Register(ctx context.Context, email string, password string) (userID int, err error)
+	IsAdmin(ctx context.Context, userID int) (bool, error)
 }
 
-func Register(gRPC *grpc.Server) {
-	ssov1.RegisterAuthServer(gRPC, &serverAPI{})
-	// бл
+// handler
+type serverAPI struct {
+	ssov1.UnimplementedAuthServer
+	auth Auth
+}
+
+func Register(gRPC *grpc.Server) { //+ , auth Auth
+	ssov1.RegisterAuthServer(gRPC, &serverAPI{
+
+		//auth: auth
+	})
+
 }
 
 const (
@@ -24,41 +34,45 @@ const (
 )
 
 func (s *serverAPI) IsAdmin(ctx context.Context, req *ssov1.IsAdminRequest) (*ssov1.IsAdminResponse, error) {
-	if err:= validateIsAdmin(req); err != nil{
+
+	if err := validateIsAdmin(req); err != nil {
 		return nil, err
 	}
 
-	//сервисный слой
-	isAdmin, err := s.//auth.IsAdmin(ctx, req.GetUserId())
-	if err != nil{
+	isAdmin, err := s.auth.IsAdmin(ctx, int(req.GetUserId()))
+	if err != nil {
+		//TODO: ...
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 	return &ssov1.IsAdminResponse{IsAdmin: isAdmin}, nil
 }
 
 func (s *serverAPI) Login(ctx context.Context, req *ssov1.LoginRequest) (*ssov1.LoginResponse, error) {
-	// TODO надо будет в бизнес добавить валидацию
+
 	if err := validateLogin(req); err != nil {
 		return nil, err
 	}
 
-	
-	//сервисный слой
-
-	return &ssov1.LoginResponse{Token: req.GetEmail()}, nil
+	token, err := s.auth.Login(ctx, req.GetEmail(), req.GetPassword(), int(req.GetAppId()))
+	if err != nil {
+		//TODO: ...
+		return nil, status.Error(codes.Internal, "internal error")
+	}
+	return &ssov1.LoginResponse{Token: token}, nil
 }
 
 func (s *serverAPI) Register(ctx context.Context, req *ssov1.RegisterRequest) (*ssov1.RegisterResponse, error) {
-	if err := validateRegister(req); err != nil{
+
+	if err := validateRegister(req); err != nil {
 		return nil, err
 	}
 
-	//сервисный слой
-	userID, err:= s.//auth.....
-	if err != nil{
+	userID, err := s.auth.Register(ctx, req.GetEmail(), req.GetPassword())
+	if err != nil {
+		//TODO: ...
 		return nil, status.Error(codes.Internal, "internal error")
 	}
-	return &ssov1.RegisterResponse{UserId: 1}, nil
+	return &ssov1.RegisterResponse{UserId: int64(userID)}, nil
 }
 
 func validateLogin(req *ssov1.LoginRequest) error {
