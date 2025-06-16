@@ -15,11 +15,11 @@ type GRPCApp struct {
 	port       int
 }
 
-func New(log *slog.Logger, port int) *GRPCApp {
+func New(log *slog.Logger, authService auth.Auth, port int) *GRPCApp {
 	gRPCServer := grpc.NewServer()
 
 	//TODO: еще будет сервисный слой auth - мб будет auth.Register... -> authgrpcRegister...
-	auth.Register(gRPCServer)
+	auth.Register(gRPCServer, authService)
 
 	return &GRPCApp{
 		log:        log,
