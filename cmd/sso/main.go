@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"ginhub.com/Aller101/sso/internal/app"
+	"ginhub.com/Aller101/sso/internal/apps"
 	"ginhub.com/Aller101/sso/internal/config"
 )
 
@@ -28,15 +28,15 @@ func main() {
 	//TODO мб добавить структуру, где будет поле wg и можно будет увел или умен счетчик у wg в методах
 	// wg := sync.WaitGroup{}
 
-	application := app.New(log, cfg.Port, cfg.StoragePath, cfg.TokenTTL)
+	applications := apps.New(log, cfg.Port, cfg.StoragePath, cfg.TokenTTL)
 
 	// wg.Add(1)
-	go application.GRPCSrv.MustRun()
+	go applications.GRPCSrv.MustRun()
 
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
 	<-sigCh
-	application.GRPCSrv.Stop()
+	applications.GRPCSrv.Stop()
 
 	// wg.Wait()
 
