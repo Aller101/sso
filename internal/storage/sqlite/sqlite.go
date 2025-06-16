@@ -30,7 +30,7 @@ func New(storagePath string) (*Storage, error) {
 func (s *Storage) UserSave(ctx context.Context, email string, passHash []byte) (uid int64, err error) {
 	const op = "storage.sqlite.UserSave"
 
-	stmt, err := s.db.Prepare("ISERT INTO users(email, passpass_hash) VALUES(?, ?)")
+	stmt, err := s.db.Prepare("INSERT INTO users(email, pass_hash) VALUES(?, ?)")
 	if err != nil {
 		return 0, fmt.Errorf("%s: %s", op, err)
 	}
