@@ -15,6 +15,8 @@ func main() {
 	//$env:CGO_ENABLED=1
 
 	//go run .\cmd\migrator\main.go --storage-path=./storage/sso.db --migrations-path=./migrations
+
+	//go run ./cmd/migrator/main.go --storage-path=./storage/sso.db --migrations-path=./migrations
 	var storagePath, migrationsPath, migrationsTable string
 
 	flag.StringVar(&storagePath, "storage-path", "", "path to storage")

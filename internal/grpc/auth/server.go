@@ -14,8 +14,8 @@ import (
 
 type Auth interface {
 	Login(ctx context.Context, email string, password string, appID int) (token string, err error)
-	Register(ctx context.Context, email string, password string) (userID int, err error)
-	IsAdmin(ctx context.Context, userID int) (bool, error)
+	RegisterNewUser(ctx context.Context, email string, password string) (userID int64, err error)
+	IsAdmin(ctx context.Context, userID int64) (bool, error)
 }
 
 // handler
@@ -41,7 +41,7 @@ func (s *serverAPI) IsAdmin(ctx context.Context, req *ssov1.IsAdminRequest) (*ss
 		return nil, err
 	}
 
-	isAdmin, err := s.auth.IsAdmin(ctx, int(req.GetUserId()))
+	isAdmin, err := s.auth.IsAdmin(ctx, int64(req.GetUserId()))
 	if err != nil {
 		if errors.Is(err, storage.ErrAppNotFound) {
 			return nil, status.Error(codes.NotFound, "user not found")
@@ -73,7 +73,7 @@ func (s *serverAPI) Register(ctx context.Context, req *ssov1.RegisterRequest) (*
 		return nil, err
 	}
 
-	userID, err := s.auth.Register(ctx, req.GetEmail(), req.GetPassword())
+	userID, err := s.auth.RegisterNewUser(ctx, req.GetEmail(), req.GetPassword())
 	if err != nil {
 		if errors.Is(err, storage.ErrUserExists) {
 			return nil, status.Error(codes.AlreadyExists, "user already exists")

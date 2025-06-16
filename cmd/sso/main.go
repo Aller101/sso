@@ -20,6 +20,8 @@ func main() {
 
 	//go run .\cmd\sso\main.go --config=./config/local.yaml
 
+	//go run ./cmd/sso/main.go --config=./config/local.yaml
+
 	cfg := config.MustLoad()
 	log := setupLogger(cfg.Env)
 
